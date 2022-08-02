@@ -1,53 +1,53 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
+﻿using IdentityServer.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace IdentityServer
+namespace IdentityServer;
+
+public class Startup
 {
-    public class Startup
+    public IWebHostEnvironment Environment
     {
-        public IWebHostEnvironment Environment { get; }
+        get;
+    }
 
-        public Startup(IWebHostEnvironment environment)
+    public Startup(IWebHostEnvironment environment)
+    {
+        Environment = environment;
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // uncomment, if you want to add an MVC-based UI
+        //services.AddControllersWithViews();
+
+        var builder = services.AddIdentityServer()
+                                .AddDeveloperSigningCredential()        //This is for dev only scenarios when you don’t have a certificate to use.
+                                .AddInMemoryApiScopes(Config.ApiScopes)
+                                .AddInMemoryClients(Config.Clients)
+                                .AddCustomUserStore();
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        if (Environment.IsDevelopment())
         {
-            Environment = environment;
+            app.UseDeveloperExceptionPage();
         }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // uncomment, if you want to add an MVC-based UI
-            //services.AddControllersWithViews();
+        // uncomment if you want to add MVC
+        //app.UseStaticFiles();
+        //app.UseRouting();
 
-            var builder = services.AddIdentityServer()
-                                    .AddDeveloperSigningCredential()        //This is for dev only scenarios when you don’t have a certificate to use.
-                                    .AddInMemoryApiScopes(Config.ApiScopes)
-                                    .AddInMemoryClients(Config.Clients);
-        }
+        app.UseIdentityServer();
 
-        public void Configure(IApplicationBuilder app)
-        {
-            if (Environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            // uncomment if you want to add MVC
-            //app.UseStaticFiles();
-            //app.UseRouting();
-
-            app.UseIdentityServer();
-
-            // uncomment, if you want to add MVC
-            //app.UseAuthorization();
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapDefaultControllerRoute();
-            //});
-        }
+        // uncomment, if you want to add MVC
+        //app.UseAuthorization();
+        //app.UseEndpoints(endpoints =>
+        //{
+        //    endpoints.MapDefaultControllerRoute();
+        //});
     }
 }
