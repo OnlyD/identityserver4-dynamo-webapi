@@ -5,12 +5,9 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.3.65" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
 
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Data\Models\" />
   </ItemGroup>
 </Project>
